@@ -18,7 +18,7 @@ A single-player word guessing game built with HTML, CSS, and JavaScript for the 
 - Type a single letter to guess one letter, or type the full word to guess it all at once
 - Correct letters turn green, wrong letters are tracked and shown on the keyboard
 - You have a limited number of wrong attempts depending on difficulty
-- Use the Hint button to reveal a random letter — costs points and time
+- Use the Hint button to reveal a random letter - costs points and time
 - The game ends when you reveal the word, run out of attempts, or the timer reaches zero
 
 ## Difficulty Levels
