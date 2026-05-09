@@ -53,8 +53,8 @@ Best score and last round result are saved per difficulty using local storage.
 - HTML5
 - CSS3
 - JavaScript (Vanilla)
-- Google Fonts — Space Grotesk and Space Mono
+- Google Fonts - Space Grotesk and Space Mono
 
 ## Module
 
-CI536 Integrated Group Project — University of Birmingham
+CI536 Integrated Group Project - University of Birmingham
