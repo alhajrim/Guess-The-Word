@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guess the Word</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="s-menu" class="screen active">
+  <div class="game-logo">
+    <h1>Guess the <span>Word</span></h1>
+    <p>Single Player Word Game</p>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Choose Difficulty</p>
+    <div class="diff-grid">
+      <div class="diff-btn active" data-d="easy" onclick="pickDiff('easy')">
+        <div class="dot"></div>
+        <span class="diff-name">Easy</span>
+        <span class="diff-info">90s · Short words</span>
+      </div>
+      <div class="diff-btn" data-d="medium" onclick="pickDiff('medium')">
+        <div class="dot"></div>
+        <span class="diff-name">Medium</span>
+        <span class="diff-info">60s · Common words</span>
+      </div>
+      <div class="diff-btn" data-d="hard" onclick="pickDiff('hard')">
+        <div class="dot"></div>
+        <span class="diff-name">Hard</span>
+        <span class="diff-info">40s · Tricky words</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="startGame()">Start Game</button>
+    <button class="btn btn-ghost" onclick="openHelp()">How to Play</button>
+  </div>
+
+  <div id="stats-card" class="card" style="display:none">
+    <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      <div id="stat-easy"   class="stat-row" data-d="easy"   style="display:none"></div>
+      <div id="stat-medium" class="stat-row" data-d="medium" style="display:none"></div>
+      <div id="stat-hard"   class="stat-row" data-d="hard"   style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<div id="s-game" class="screen">
+  <div class="hud">
+    <div class="hud-block">
+      <span class="hud-label">Score</span>
+      <span class="hud-val" id="score-val">0</span>
+    </div>
+    <div class="hud-block timer-block">
+      <div class="timer-wrap"><div class="timer-fill" id="timer-fill"></div></div>
+      <span class="hud-val" id="timer-val">60</span>
+    </div>
+    <div class="hud-block">
+      <span class="hud-label">Wrong</span>
+      <span class="hud-val" id="wrong-val">0/6</span>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap">
+    <span class="cat-tag" id="cat-tag">Category</span>
+    <span class="cat-tag" id="diff-tag">Easy</span>
+  </div>
+
+  <div class="word-row" id="word-row"></div>
+
+  <div class="feedback-line" id="feedback"></div>
+
+  <div class="hints-area">
+    <button class="btn btn-ghost btn-sm" id="hint-btn" onclick="useHint()">💡 Hint</button>
+    <div class="hint-dots" id="hint-dots"></div>
+    <span class="hint-note" id="hint-note">3 hints left · −50 pts each</span>
+  </div>
+
+  <div class="input-row">
+    <input id="guess-input" class="guess-box" type="text" maxlength="20"
+      placeholder="Type a letter or full word..." autocomplete="off"
+      autocorrect="off" spellcheck="false" onkeydown="onKey(event)">
+    <button class="btn btn-primary btn-sm" onclick="submitGuess()">Enter</button>
+  </div>
+
+  <div class="keyboard" id="keyboard"></div>
+
+  <div>
+    <p class="section-label">Guessed Letters</p>
+    <div class="tried-row" id="tried-row"></div>
+  </div>
+
+  <button class="btn btn-danger btn-sm" onclick="quitToMenu()">Quit Game</button>
+</div>
+
+<div id="s-win" class="screen">
+  <div class="result-icon">🏆</div>
+  <h2 class="result-title" style="color:var(--green)">You Won!</h2>
+  <p class="result-word" id="win-word"></p>
+  <div class="new-hs" id="new-hs">★ New High Score!</div>
+  <div class="card">
+    <div class="score-table">
+      <div class="score-row"><span class="lbl">Base score</span><span class="val" id="r-base">0</span></div>
+      <div class="score-row"><span class="lbl">Time bonus</span><span class="val" id="r-time">+0</span></div>
+      <div class="score-row"><span class="lbl">Wrong guesses penalty</span><span class="val" id="r-wrong">0</span></div>
+      <div class="score-row"><span class="lbl">Hints penalty</span><span class="val" id="r-hints">0</span></div>
+      <div class="score-row total"><span class="lbl" style="color:var(--text);font-weight:700">Final Score</span><span class="val" id="r-final">0</span></div>
+      <div class="score-row hs"><span class="lbl">Session Best</span><span class="val" id="r-hs">0</span></div>
+    </div>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="startGame()">Play Again</button>
+    <button class="btn btn-ghost" onclick="goMenu()">Main Menu</button>
+  </div>
+</div>
+
+<div id="s-lose" class="screen">
+  <div class="result-icon">💀</div>
+  <h2 class="result-title" style="color:var(--red)">Game Over</h2>
+  <p style="font-size:0.85rem; color:var(--muted); text-align:center">The word was</p>
+  <p class="result-word" id="lose-word"></p>
+  <div class="card">
+    <div class="score-table">
+      <div class="score-row total"><span class="lbl" style="color:var(--text);font-weight:700">Your Score</span><span class="val" id="l-final">0</span></div>
+      <div class="score-row hs"><span class="lbl">Session Best</span><span class="val" id="l-hs">0</span></div>
+    </div>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="startGame()">Try Again</button>
+    <button class="btn btn-ghost" onclick="goMenu()">Main Menu</button>
+  </div>
+</div>
+
+<div id="overlay" class="overlay" onclick="overlayClick(event)">
+  <div class="overlay-box">
+    <h2>How to Play</h2>
+    <ul class="rules">
+      <li><span class="num">1</span><span>A hidden word is shown as blank tiles. Guess it before the timer runs out.</span></li>
+      <li><span class="num">2</span><span>Type a <strong>single letter</strong> to guess one letter, or type the <strong>full word</strong> to guess it all at once.</span></li>
+      <li><span class="num">3</span><span>Correct letters turn <strong style="color:var(--green)">green</strong>. Wrong guesses are limited — Easy: 6, Medium: 5, Hard: 4.</span></li>
+      <li><span class="num">4</span><span>You start with <strong>500 points</strong>. Each wrong guess costs <strong>−40 pts</strong>. Winning gives a <strong>time bonus</strong>.</span></li>
+      <li><span class="num">5</span><span>Use the 💡 <strong>Hint</strong> button to reveal a letter — costs <strong>−50 pts and −5 seconds</strong>, max 3 per round.</span></li>
+      <li><span class="num">6</span><span>Pick <strong style="color:var(--green)">Easy</strong>, <strong style="color:var(--yellow)">Medium</strong>, or <strong style="color:var(--red)">Hard</strong> on the main menu.</span></li>
+    </ul>
+    <button class="btn btn-primary" style="width:100%" onclick="closeHelp()">Got it, let's play!</button>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
